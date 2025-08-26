@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using AMassage.Data;
-
+﻿using AMassage.Data;
+using AMassage.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 namespace AMassage.Controllers
 {
     public class BookingController : Controller
@@ -13,9 +14,9 @@ namespace AMassage.Controllers
         }
 
         // GET: Booking
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(_context.Bookings.Where(b => b.IsAvailable).ToList());
+            return View(await _context.Bookings.ToListAsync());
         }
 
         // GET: Booking/BookSlot/{id}
@@ -27,7 +28,7 @@ namespace AMassage.Controllers
             return View(booking);
         }
 
-        // POST: Booking/BookSlot/{id}
+        /*// POST: Booking/BookSlot/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult BookSlot(int id, Booking booking)
@@ -42,20 +43,41 @@ namespace AMassage.Controllers
             _context.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
+        */
+
+        [HttpPost]
+        public async Task<IActionResult> BookSlot(int id, [Bind("ClientName,PhoneNumber,Comment")] Booking booking)
+        {
+            var currentBooking = await _context.Bookings.FindAsync(id);
+            if (currentBooking == null || currentBooking.IsAvailable == false)
+            {
+                return NotFound();
+            }
+
+            currentBooking.ClientName = booking.ClientName;
+            currentBooking.PhoneNumber = booking.PhoneNumber;
+            currentBooking.Comment = booking.Comment;
+            currentBooking.IsAvailable = false;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
 
         // GET: Booking/Create
         public IActionResult Create() => View();
 
         // POST: Booking/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Booking booking)
+        public async Task<IActionResult> Create([Bind("Id,SlotDate,IsAvailable")] Booking booking)
         {
-            if (!ModelState.IsValid)
-                return View(booking);
-            _context.Bookings.Add(booking);
-            _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            if (ModelState.IsValid)
+            {
+                _context.Add(booking); // Добавляем новый слот в базу данных
+                await _context.SaveChangesAsync(); // Сохраняем изменения
+                return RedirectToAction(nameof(Index)); // Перенаправляем на страницу со списком слотов
+            }
+            return View(booking); // Если модель невалидная, возвращаем форму обратно
         }
 
         // GET: Booking/Edit/{id}
@@ -67,7 +89,7 @@ namespace AMassage.Controllers
             return View(booking);
         }
 
-        // POST: Booking/Edit/{id}
+        /*// POST: Booking/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Booking booking)
@@ -85,6 +107,55 @@ namespace AMassage.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+        */
+
+        // GET: /Booking/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var booking = await _context.Bookings.FindAsync(id);
+            if (booking == null)
+            {
+                return NotFound();
+            }
+            return View(booking);
+        }
+
+        // POST: /Booking/Edit/5
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,SlotDate,IsAvailable,ClientName,PhoneNumber,Comment")] Booking booking)
+        {
+            if (id != booking.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(booking);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Bookings.Any(e => e.Id == id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(booking);
+        }
 
         // GET: Booking/Delete/{id}
         public IActionResult Delete(int id)
@@ -95,7 +166,7 @@ namespace AMassage.Controllers
             return View(booking);
         }
 
-        // POST: Booking/Delete/{id}
+        /*// POST: Booking/Delete/{id}
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
@@ -105,5 +176,34 @@ namespace AMassage.Controllers
             _context.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
+        */
+
+        // GET: /Booking/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var booking = await _context.Bookings.FirstOrDefaultAsync(m => m.Id == id);
+            if (booking == null)
+            {
+                return NotFound();
+            }
+
+            return View(booking);
+        }
+
+        // POST: /Booking/Delete/5
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var booking = await _context.Bookings.FindAsync(id);
+            _context.Bookings.Remove(booking);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

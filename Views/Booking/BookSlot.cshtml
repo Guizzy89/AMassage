@@ -1,0 +1,26 @@
+﻿@model AMassage.Models.Booking
+
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Оформление бронирования";
+}
+
+<h1>Оформление бронирования</h1>
+
+<div class="row">
+    <form method="post" asp-controller="Booking" asp-action="BookSlot" asp-route-id="@Model.Id">
+        <div class="mb-3">
+            <label for="ClientName" class="form-label">Имя клиента:</label>
+            <input type="text" class="form-control" id="ClientName" name="ClientName" />
+        </div>
+        <div class="mb-3">
+            <label for="PhoneNumber" class="form-label">Телефон:</label>
+            <input type="tel" class="form-control" id="PhoneNumber" name="PhoneNumber" />
+        </div>
+        <div class="mb-3">
+            <label for="Comment" class="form-label">Комментарий:</label>
+            <textarea class="form-control" id="Comment" name="Comment"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Забронировать</button>
+    </form>
+</div>

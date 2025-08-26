@@ -1,4 +1,6 @@
-﻿public class Booking
+﻿namespace AMassage.Models;
+
+public class Booking
 {
     public int Id { get; set; }
     public DateTime SlotDate { get; set; }

@@ -1,0 +1,22 @@
+﻿@model AMassage.Models.Massage
+
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Создание новой услуги";
+}
+
+<h1>Новая услуга массажа</h1>
+
+<div class="row">
+    <form method="post" asp-controller="Massage" asp-action="Create">
+        <div class="mb-3">
+            <label for="Name" class="form-label">Название:</label>
+            <input type="text" class="form-control" id="Name" name="Name" placeholder="Название процедуры" />
+        </div>
+        <div class="mb-3">
+            <label for="Description" class="form-label">Описание:</label>
+            <textarea class="form-control" id="Description" name="Description"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Создать</button>
+    </form>
+</div>

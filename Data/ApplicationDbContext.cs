@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using AMassage.Models;
 
 namespace AMassage.Data
 {

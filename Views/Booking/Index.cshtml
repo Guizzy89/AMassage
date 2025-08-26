@@ -1,0 +1,35 @@
+﻿@model IEnumerable<AMassage.Models.Booking>
+
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Доступные временные слоты";
+}
+
+<h1>Свободные слоты для записи</h1>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="@Url.Action("Create", "Booking")" class="btn btn-success">Добавить слот для брони</a>
+
+</div>
+
+<div class="container">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Время слота</th>
+                <th>Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var slot in Model)
+            {
+                <tr>
+                    <td>@slot.SlotDate.ToLocalTime().ToString("dd/MM/yyyy hh:mm")</td>
+                    <td>
+                        <a asp-action="BookSlot" asp-route-id="@slot.Id" class="btn btn-primary">Забронировать слот</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

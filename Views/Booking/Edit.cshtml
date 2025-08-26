@@ -1,0 +1,18 @@
+﻿@model AMassage.Models.Booking
+
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Изменение временного слота";
+}
+
+<h1>Изменение временного слота</h1>
+
+<div class="row">
+    <form method="post" asp-controller="Booking" asp-action="Edit" asp-route-id="@Model.Id">
+        <div class="mb-3">
+            <label for="SlotDate" class="form-label">Дата и время слота:</label>
+            <input type="datetime-local" class="form-control" id="SlotDate" name="SlotDate" value="@Model.SlotDate.ToString("yyyy-MM-ddTHH:mm:ss")" />
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+</div>

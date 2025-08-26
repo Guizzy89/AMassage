@@ -1,0 +1,22 @@
+﻿@model AMassage.Models.Booking
+
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Создание нового слота";
+}
+
+<h1>Создание нового слота</h1>
+
+<div class="row">
+    <form method="post" asp-controller="Booking" asp-action="Create">
+        <div class="mb-3">
+            <label for="SlotDate" class="form-label">Дата и время слота:</label>
+            <input type="datetime-local" class="form-control" id="SlotDate" name="SlotDate" />
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="IsAvailable" name="IsAvailable" checked />
+            <label class="form-check-label" for="IsAvailable">Слот доступен</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Создать</button>
+    </form>
+</div>

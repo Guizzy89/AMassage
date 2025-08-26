@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using AMassage.Data;
+﻿using AMassage.Data;
+using AMassage.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AMassage.Controllers
 {
@@ -32,61 +34,90 @@ namespace AMassage.Controllers
 
         // POST: Massage/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Massage massage)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description")] Massage massage)
         {
-            if (!ModelState.IsValid)
-                return View(massage);
-            _context.Massages.Add(massage);
-            _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            if (ModelState.IsValid)
+            {
+                _context.Add(massage);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(massage);
         }
 
         // GET: Massage/Edit/{id}
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int? id)
         {
-            var massage = _context.Massages.Find(id);
-            if (massage == null)
+            if (id == null)
+            {
                 return NotFound();
+            }
+
+            var massage = await _context.Massages.FindAsync(id);
+            if (massage == null)
+            {
+                return NotFound();
+            }
             return View(massage);
         }
 
         // POST: Massage/Edit/{id}
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Massage massage)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Massage massage)
         {
-            if (!ModelState.IsValid || id != massage.Id)
-                return View(massage);
-            try
+            if (id != massage.Id)
             {
-                _context.Update(massage);
-                _context.SaveChanges();
+                return NotFound(); // Идентификатор не совпадает
             }
-            catch (Exception ex)
+
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Unable to save changes.");
+                try
+                {
+                    // Прямо обновляем существующую запись
+                    _context.Update(massage);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Massages.Any(e => e.Id == id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Index));
+            return View(massage); // Возврат к форме, если модель недействительна
         }
 
         // GET: Massage/Delete/{id}
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            var massage = _context.Massages.Find(id);
-            if (massage == null)
+            if (id == null)
+            {
                 return NotFound();
+            }
+
+            var massage = await _context.Massages.FirstOrDefaultAsync(m => m.Id == id);
+            if (massage == null)
+            {
+                return NotFound();
+            }
+
             return View(massage);
         }
 
         // POST: Massage/Delete/{id}
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var massage = _context.Massages.Find(id);
+            var massage = await _context.Massages.FindAsync(id);
             _context.Massages.Remove(massage);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

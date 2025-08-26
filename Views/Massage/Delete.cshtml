@@ -1,0 +1,14 @@
+﻿@model AMassage.Models.Massage
+
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Удаление услуги";
+}
+
+<h1>Удаление услуги</h1>
+<p>Вы действительно хотите удалить услугу "@Model.Name"?</p>
+
+<form method="post" asp-controller="Massage" asp-action="Delete" asp-route-id="@Model.Id">
+    <button type="submit" class="btn btn-danger">Да, удалить</button>
+    <a href="/Massage" class="btn btn-secondary">Отмена</a>
+</form>

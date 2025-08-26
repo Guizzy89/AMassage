@@ -1,0 +1,38 @@
+﻿@model IEnumerable<AMassage.Models.Massage>
+
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Услуги массажа";
+}
+
+<h1>Услуги массажа</h1>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="@Url.Action("Create", "Massage")" class="btn btn-success">Добавить услугу</a>
+    
+</div>
+
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Описание</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var massage in Model)
+            {
+                <tr>
+                    <td>@massage.Name</td>
+                    <td>@massage.Description</td>
+                    <td>
+                        <a href="@Url.Action("Edit", "Massage", new { id = massage.Id })" class="btn btn-info">Редактировать</a>
+                        <a href="@Url.Action("Delete", "Massage", new { id = massage.Id })" class="btn btn-danger">Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
